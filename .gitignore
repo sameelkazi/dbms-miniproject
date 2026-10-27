@@ -1,0 +1,24 @@
+# Node Dependencies
+node_modules/
+
+# Internal Python Automation & Document Generators
+*.py
+__pycache__/
+assets/
+00_problem_statement.md
+scratch_*.txt
+test_*.png
+test_*.pdf
+sample_p7.png
+*.log
+
+# Reference / Sample material from other projects (DO NOT COMMIT)
+sample_pharmacy_example/
+extracted_sample_assets/
+
+# Local Environment & Agent Cache
+.env
+.env.local
+.agents/
+.DS_Store
+Thumbs.db
