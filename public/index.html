@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surplus Food Rescue | Live Perishable Food Discovery & Preservation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-logo-icon">🍲</div>
+        <div>
+          <div class="brand-title">SURPLUS FOOD RESCUE</div>
+          <div class="brand-sub">CECS202 DBMS Mini Project · SPIT Computer Engineering</div>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" id="navTabs">
+        <button class="nav-tab active" data-tab="receiverTab">
+          <span class="tab-icon">🔍</span> Find Surplus Food
+        </button>
+        <button class="nav-tab" data-tab="donorTab">
+          <span class="tab-icon">🏪</span> Donor Portal
+        </button>
+        <button class="nav-tab" data-tab="adminTab">
+          <span class="tab-icon">🛡️</span> Admin Verification
+        </button>
+        <button class="nav-tab" data-tab="vivaTab">
+          <span class="tab-icon">⚡</span> 20 SQL Queries (Viva)
+        </button>
+      </nav>
+
+      <div class="clock-badge">
+        <span class="pulse-dot"></span>
+        <div>
+          <div class="clock-label">DEMO CLOCK (LOCKED)</div>
+          <div class="clock-time" id="demoClock">05 Nov 2026, 20:30</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- KPI Banner -->
+  <section class="kpi-banner">
+    <div class="kpi-card">
+      <div class="kpi-val" id="kpiDonors">--</div>
+      <div class="kpi-label">Verified Donors</div>
+    </div>
+    <div class="kpi-card highlight-green">
+      <div class="kpi-val" id="kpiUnits">--</div>
+      <div class="kpi-label">Surplus Portions Available</div>
+    </div>
+    <div class="kpi-card highlight-blue">
+      <div class="kpi-val" id="kpiBatches">--</div>
+      <div class="kpi-label">Active Safe Batches</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="kpiRescued">--</div>
+      <div class="kpi-label">Orders Rescued</div>
+    </div>
+    <div class="kpi-card highlight-amber">
+      <div class="kpi-val" id="kpiHolds">--</div>
+      <div class="kpi-label">Active 45-Min Holds</div>
+    </div>
+  </section>
+
+  <!-- Active Hold Floating Banner -->
+  <div class="active-hold-bar" id="activeHoldBar" style="display: none;">
+    <div class="hold-info">
+      <span class="hold-badge">ACTIVE 45-MIN HOLD</span>
+      <span id="holdReservationText">Reservation #7 at Spice Route Restaurant</span>
+      <span class="hold-timer" id="holdCountdown">44:30 remaining</span>
+    </div>
+    <div class="hold-actions">
+      <button class="btn btn-sm btn-outline" id="btnCancelHold">Cancel Hold</button>
+      <button class="btn btn-sm btn-success" id="btnCollectedHold">Mark Collected & Rate</button>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <!-- TAB 1: RECEIVER PORTAL -->
+    <section id="receiverTab" class="tab-content active">
+      <div class="search-filter-card">
+        <div class="search-row">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search biryani, sandwich, bread, pastry, or area...">
+          </div>
+          <button class="btn btn-primary" id="btnSearch">Search Nearby</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-group">
+            <label class="filter-label">Category:</label>
+            <div class="filter-pills" id="categoryPills">
+              <button class="pill active" data-cat="ALL">All Categories</button>
+              <button class="pill" data-cat="COOKED">Cooked Meals</button>
+              <button class="pill" data-cat="BAKED">Baked Goods</button>
+              <button class="pill" data-cat="FRUIT_VEG">Produce / Salad</button>
+              <button class="pill" data-cat="DAIRY">Dairy</button>
+              <button class="pill" data-cat="PACKAGED">Packaged</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Diet:</label>
+            <div class="filter-pills" id="dietPills">
+              <button class="pill active" data-diet="ALL">All</button>
+              <button class="pill" data-diet="VEG">🟢 Pure Veg</button>
+              <button class="pill" data-diet="NON_VEG">🔴 Non-Veg</button>
+              <button class="pill" data-diet="VEGAN">🌱 Vegan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Live Surplus Food Available Right Now</h2>
+          <p class="section-sub">Verified donors near Andheri West with unexpired safe portions open for walk-in pickup.</p>
+        </div>
+        <div class="view-tag">MySQL View: public_listing</div>
+      </div>
+
+      <div class="food-grid" id="foodGrid">
+        <div class="loading-state">Connecting to MySQL and fetching live surplus inventory...</div>
+      </div>
+    </section>
+
+    <!-- TAB 2: DONOR PORTAL -->
+    <section id="donorTab" class="tab-content">
+      <div class="portal-header-bar">
+        <div>
+          <h2 class="section-title">Donor Operations & Wastage Dashboard</h2>
+          <p class="section-sub">Manage active batches, track expiring lots, and review customer reservations.</p>
+        </div>
+        <div class="portal-controls">
+          <select id="donorSelect" class="form-select">
+            <option value="2">Spice Route Restaurant (Andheri East)</option>
+            <option value="4">Juhu Caterers (Vile Parle West)</option>
+            <option value="1">Gulab Sweets & Bakers (Andheri West)</option>
+            <option value="3">Midnight Bakehouse 24x7 (Bandra West)</option>
+          </select>
+          <button class="btn btn-primary" id="btnOpenNewBatchModal">+ Add New Batch</button>
+        </div>
+      </div>
+
+      <!-- Urgent Expiring Alert Section -->
+      <div class="alert-box-urgent">
+        <div class="alert-header">
+          <span class="alert-badge">IMMINENT EXPIRY ALERT</span>
+          <span>Batches expiring within the next 3 hours (MySQL View: expiring_soon)</span>
+        </div>
+        <div class="expiring-cards-grid" id="expiringCardsGrid">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+      <div class="dashboard-split">
+        <!-- Left: Incoming Reservations -->
+        <div class="dash-card">
+          <div class="card-header">
+            <h3>Incoming Customer Reservations</h3>
+            <span class="badge badge-info">FEFO Allocated</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="donorReservationsTable">
+              <thead>
+                <tr>
+                  <th>Hold ID</th>
+                  <th>Receiver</th>
+                  <th>Items Summary</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Unmet Locality Demand -->
+        <div class="dash-card">
+          <div class="card-header">
+            <h3>Unmet Demand Intelligence</h3>
+            <span class="badge badge-amber">Search Log Insights</span>
+          </div>
+          <p class="text-sm">Items searched within 2 km of your location that returned zero results in MySQL View <code>unmet_demand</code>:</p>
+          <div class="unmet-list" id="unmetList">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ADMIN PORTAL -->
+    <section id="adminTab" class="tab-content">
+      <div class="portal-header-bar">
+        <div>
+          <h2 class="section-title">Municipal / Admin Verification Portal</h2>
+          <p class="section-sub">Review FSSAI licences, approve/reject donor registrations, and trigger system cleanup sweeps.</p>
+        </div>
+        <button class="btn btn-outline" id="btnRunSweep">🧹 Run Expiry Sweep (release_expired_reservations)</button>
+      </div>
+
+      <div class="dash-card mb-4">
+        <div class="card-header">
+          <h3>Registered Donors Verification Review</h3>
+          <span class="badge badge-purple">Column Privilege: UPDATE (status, verified_by, verified_at)</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="adminDonorsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Establishment</th>
+                <th>Type</th>
+                <th>FSSAI No</th>
+                <th>Area</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Reviewed By</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="card-header">
+          <h3>System Audit Trail (Batch_Log Ledger)</h3>
+          <span class="badge badge-slate">Trigger-Automated Logging</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="auditLogsTable">
+            <thead>
+              <tr>
+                <th>Log ID</th>
+                <th>Donor</th>
+                <th>Food Item</th>
+                <th>Batch No</th>
+                <th>Old Qty</th>
+                <th>New Qty</th>
+                <th>Reason</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: VIVA QUERY EXPLORER -->
+    <section id="vivaTab" class="tab-content">
+      <div class="portal-header-bar">
+        <div>
+          <h2 class="section-title">Interactive SQL Viva Explorer (All 20 Queries)</h2>
+          <p class="section-sub">Execute any of the 20 experiment queries live against the local MySQL instance.</p>
+        </div>
+        <div class="query-timer-badge" id="queryDurationBadge">Execution: -- ms</div>
+      </div>
+
+      <div class="query-selector-bar">
+        <div class="query-group-label">Part A: Joins</div>
+        <div class="query-buttons-grid">
+          <button class="btn-q active" data-q="1">Q1: Inner Join</button>
+          <button class="btn-q" data-q="2">Q2: Left Join</button>
+          <button class="btn-q" data-q="3">Q3: 5-Table Join</button>
+          <button class="btn-q" data-q="4">Q4: Junction M:N</button>
+          <button class="btn-q" data-q="5">Q5: Self Join</button>
+          <button class="btn-q" data-q="6">Q6: Anti-Join</button>
+          <button class="btn-q" data-q="7">Q7: Main Search</button>
+        </div>
+
+        <div class="query-group-label mt-2">Part B: Aggregates</div>
+        <div class="query-buttons-grid">
+          <button class="btn-q" data-q="8">Q8: Inventory Valuation</button>
+          <button class="btn-q" data-q="9">Q9: Price Comparison</button>
+          <button class="btn-q" data-q="10">Q10: Status Count</button>
+          <button class="btn-q" data-q="11">Q11: Imminent Expiry</button>
+          <button class="btn-q" data-q="12">Q12: Demand Logs</button>
+          <button class="btn-q" data-q="13">Q13: Rescue Volume</button>
+        </div>
+
+        <div class="query-group-label mt-2">Part C: Subqueries</div>
+        <div class="query-buttons-grid">
+          <button class="btn-q" data-q="14">Q14: Scalar Subquery</button>
+          <button class="btn-q" data-q="15">Q15: Correlated Subquery</button>
+          <button class="btn-q" data-q="16">Q16: NOT EXISTS</button>
+          <button class="btn-q" data-q="17">Q17: Nested IN</button>
+          <button class="btn-q" data-q="18">Q18: Derived Table</button>
+          <button class="btn-q" data-q="19">Q19: Relational Division</button>
+          <button class="btn-q" data-q="20">Q20: Demand Insight</button>
+        </div>
+      </div>
+
+      <div class="query-code-panel">
+        <div class="code-header">
+          <span class="code-title" id="queryTitle">Q1: Verified donors and the admin who verified each (INNER JOIN)</span>
+          <button class="btn btn-sm btn-primary" id="btnRunCurrentQuery">▶ Run Query on MySQL</button>
+        </div>
+        <pre class="sql-code-block"><code id="sqlCodeDisplay">SELECT d.donor_id, d.name AS donor...</code></pre>
+      </div>
+
+      <div class="dash-card mt-3">
+        <div class="card-header">
+          <h3>Live MySQL Result Table</h3>
+          <span class="badge badge-green" id="resultRowCount">0 rows returned</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="vivaResultTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Reservation Modal -->
+  <div class="modal-overlay" id="reserveModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Reserve Surplus Food (45-Minute Hold)</h3>
+        <button class="modal-close" id="btnCloseReserveModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="reserve-item-preview">
+          <div class="item-name" id="modalItemName">Veg Biryani</div>
+          <div class="item-donor" id="modalDonorName">Spice Route Restaurant · Andheri East</div>
+          <div class="item-price" id="modalPrice">₹45.00 <span class="text-sm">(Original: ₹60.00)</span></div>
+        </div>
+
+        <div class="form-group">
+          <label>Select Beneficiary / Receiver:</label>
+          <select id="modalReceiverSelect" class="form-select">
+            <option value="1">Aarav Sharma (Individual · 6 unit cap)</option>
+            <option value="2">Pooja Nair (Student · 6 unit cap)</option>
+            <option value="3">Roti Bank Mumbai (NGO · Unlimited capacity)</option>
+            <option value="4">Anandi Foundation (NGO · Unlimited capacity)</option>
+            <option value="5">Sneha Kulkarni (Individual · 6 unit cap)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Quantity to Reserve (Portions / Units):</label>
+          <input type="number" id="modalQuantity" class="form-input" min="1" max="10" value="2">
+          <div class="help-text">Note: Enforces FEFO ordering in MySQL (oldest lot allocated first). Individuals capped at 6 units maximum.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelReserveModal">Cancel</button>
+        <button class="btn btn-success" id="btnConfirmReserve">Confirm & Hold for 45 Mins</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Batch Modal -->
+  <div class="modal-overlay" id="batchModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add New Food Batch</h3>
+        <button class="modal-close" id="btnCloseBatchModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Food Item:</label>
+          <select id="batchItemSelect" class="form-select">
+            <option value="1">Veg Biryani (Cooked · Safe shelf life: 8h)</option>
+            <option value="3">Chicken Curry (Cooked · Safe shelf life: 6h)</option>
+            <option value="4">Dal Tadka (Cooked · Safe shelf life: 8h)</option>
+            <option value="6">Whole Wheat Bread (Baked · Safe shelf life: 48h)</option>
+            <option value="7">Butter Croissant (Baked · Safe shelf life: 24h)</option>
+            <option value="9">Fresh Fruit Salad (Produce · Safe shelf life: 12h)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Batch Code:</label>
+          <input type="text" id="batchNoInput" class="form-input" value="SR-VB-1106" placeholder="e.g. SR-VB-1106">
+        </div>
+
+        <div class="form-group">
+          <label>Prepared At Timestamp:</label>
+          <input type="text" id="preparedAtInput" class="form-input" value="2026-11-05 18:00:00">
+        </div>
+
+        <div class="form-group">
+          <label>Best-Before Timestamp:</label>
+          <input type="text" id="bestBeforeInput" class="form-input" value="2026-11-06 01:00:00">
+          <div class="help-text">Trigger Guard: Must be > current time, and within safe shelf life of item.</div>
+        </div>
+
+        <div class="form-group">
+          <label>Available Quantity (Units):</label>
+          <input type="number" id="batchQtyInput" class="form-input" min="1" max="100" value="20">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelBatchModal">Cancel</button>
+        <button class="btn btn-primary" id="btnSubmitBatch">Insert Batch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rating Modal -->
+  <div class="modal-overlay" id="rateModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Rate Rescued Food</h3>
+        <button class="modal-close" id="btnCloseRateModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Rating (1 to 5 Stars):</label>
+          <select id="rateScoreSelect" class="form-select">
+            <option value="5">⭐⭐⭐⭐⭐ 5 Stars - Exceptionally fresh & warm</option>
+            <option value="4">⭐⭐⭐⭐ 4 Stars - Very good condition</option>
+            <option value="3">⭐⭐⭐ 3 Stars - Average freshness</option>
+            <option value="2">⭐⭐ 2 Stars - Cold / sub-optimal</option>
+            <option value="1">⭐ 1 Star - Unacceptable</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Comments / Feedback:</label>
+          <textarea id="rateCommentInput" class="form-input" rows="3" placeholder="Food was fresh, warm, and carefully packed. Thank you!"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelRateModal">Cancel</button>
+        <button class="btn btn-success" id="btnSubmitFeedback">Submit Rating</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
