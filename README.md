@@ -8,11 +8,11 @@
 
 ## 👥 Team Information (Batch B2)
 
-| Student Name | Roll Number | UID | Role / Contribution |
-| :--- | :--- | :--- | :--- |
-| **Sameel Kazi** | 2025300107 | 2025300107 | Schema Architecture, 3NF Normalization, Backend API & Full-Stack Integration |
-| **Pradhyun Kembhavi** | 2025300109 | 2025300109 | Geospatial SQL Queries, Relational Division, Terminal Execution Tests |
-| **Adeeb Khan** | 2025300110 | 2025300110 | Stored Procedures, FEFO Trigger Pipeline, Role Privileges & ACID Transactions |
+| Student Name | UID |
+| :--- | :--- |
+| **Sameel Kazi** | 2025300107 |
+| **Pradhyun Kembhavi** | 2025300109 |
+| **Adeeb Khan** | 2025300110 |
 
 ---
 
