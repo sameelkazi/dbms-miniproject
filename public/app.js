@@ -83,11 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const res = await fetch('/api/stats');
       const data = await res.json();
-      document.getElementById('kpiDonors').innerText = data.verifiedDonors;
-      document.getElementById('kpiUnits').innerText = data.totalUnitsAvailable;
-      document.getElementById('kpiBatches').innerText = data.activeBatches;
-      document.getElementById('kpiRescued').innerText = data.rescuedOrders;
-      document.getElementById('kpiHolds').innerText = data.activeHolds;
+      if (data && data.verifiedDonors !== undefined) {
+        document.getElementById('kpiDonors').innerText = data.verifiedDonors;
+        document.getElementById('kpiUnits').innerText = data.totalUnitsAvailable;
+        document.getElementById('kpiBatches').innerText = data.activeBatches;
+        document.getElementById('kpiRescued').innerText = data.rescuedOrders;
+        document.getElementById('kpiHolds').innerText = data.activeHolds;
+      }
     } catch (err) {
       console.error("Stats load failed:", err);
     }
@@ -130,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(url);
       const listings = await res.json();
 
-      if (!listings || listings.length === 0) {
+      if (!Array.isArray(listings) || listings.length === 0) {
         foodGrid.innerHTML = '<div class="loading-state">No surplus food matching your criteria found right now.</div>';
         return;
       }
